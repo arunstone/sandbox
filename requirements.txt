@@ -1,0 +1,5 @@
+pytest
+selenium
+requests
+locust
+psycopg2-binary

@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  # PostgreSQL for db tests
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpass
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  # Unit tests
+  unittest:
+    build: .
+    command: pytest tester/test/code --html=tester/test/code/html-report/report.html
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+
+  # API tests
+  api:
+    build: .
+    command: pytest tester/api --html=tester/api/html-report/report.html
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+
+  # DB tests
+  dbtest:
+    build: .
+    command: pytest tester/db --html=tester/db/html-report/report.html
+    environment:
+      DB_HOST: postgres
+      DB_NAME: testdb
+      DB_USER: testuser
+      DB_PASSWORD: testpass
+      DB_PORT: 5432
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+
+  # UI (Selenium) tests
+  ui:
+    build: .
+    command: pytest tester/ui --html=tester/ui/html-report/report.html
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+    shm_size: '2gb'  # for Chrome stability
+
+  # Load tests (Locust)
+  load:
+    build: .
+    command: locust -f tester/load/load_google_search.py --headless -u 5 -r 1 -t 10s --host https://www.google.com
+    ports:
+      - "8089:8089"
+    volumes:
+      - .:/app
+
+volumes:
+  dbdata:

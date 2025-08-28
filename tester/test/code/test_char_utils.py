@@ -1,9 +1,13 @@
-from char_utils import most_frequent_repeating_char
-
-# test_char_utils.py
 import sys
 import os
+
+# add developer folder to Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../developer")))
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+
+from char_utils import most_frequent_repeating_char
 
 def test_with_repeats():
     repeats, most_frequent = most_frequent_repeating_char("Arun Kumaru")

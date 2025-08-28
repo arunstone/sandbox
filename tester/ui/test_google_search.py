@@ -1,7 +1,7 @@
 import pytest
 import time
 
-def test_google_search(driver):
+def test_google_search_basic(driver):
     driver.get("https://www.google.com")
     search_box = driver.find_element("name", "q")
     search_box.send_keys("Python Selenium pytest")
